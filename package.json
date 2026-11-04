@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "content:export": "tsx scripts/export-content.ts",
+    "content:import": "tsx scripts/import-content.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

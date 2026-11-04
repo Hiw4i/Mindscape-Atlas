@@ -65,7 +65,13 @@ Admin panel: http://localhost:3000/admin/login (password from `ADMIN_PASSWORD`).
 
 ## Data and backups
 
-The whole database is a single file, `data/atlas.db` (WAL mode). Copying that file is a complete backup. The `data/` directory is intentionally **not** committed: it holds personal content. If you use GitHub only as a code backup, keep database backups separately (encrypted cloud storage, an external drive, or a second private repo for snapshots).
+- **Content is versioned in the repository.** `npm run content:export` dumps all knowledge base content (topics, articles, myths, sources, ideas, states, links) to `content/atlas-content.json` - a readable, diff-friendly file that is committed to git. `npm run content:import` restores the database from that file (it replaces all content; settings and secrets are untouched).
+- The workflow after editing content in the admin panel: `npm run content:export`, review the diff, commit. Before publishing the repository, the diff is the place to check that nothing private slips in.
+- The runtime database itself, `data/atlas.db` (WAL mode), is **not** committed: it may accumulate private notes, and a binary file does not belong in reviewable history. Copying that file is a complete instant backup.
+
+## Privacy
+
+The repository is intended to be published publicly later. Kept out of it by design: `data/` (runtime database), `.env.local` (admin password and session secret), `node_modules`, build output. Everything else - code and content - is meant to be public, with copyright retained by the author.
 
 ## Publishing this repository
 
@@ -106,4 +112,4 @@ data/                Database file (not committed)
 
 ## License
 
-All rights reserved. This repository is a private backup; no license is granted for reuse, distribution, or modification.
+Copyright (c) the repository owner. All rights reserved. The knowledge base content (articles, myth debunkings, ideas) and the code are authored works of the repository owner. The repository is planned to be published publicly later; until a license is added at publication time, no reuse, distribution, or modification is granted.
