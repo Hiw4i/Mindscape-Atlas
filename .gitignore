@@ -1,0 +1,20 @@
+# зависимости
+node_modules/
+
+# сборка Next.js
+.next/
+out/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# база данных (личный контент, не для репозитория)
+data/
+
+# переменные окружения
+.env
+.env*.local
+
+# система
+.DS_Store
+Thumbs.db
+*.log
