@@ -31,6 +31,13 @@ export default async function StatePage({ params }: PageProps) {
   const myths = getStateMyths(state.id);
   const siblings = getStatesList().filter((s) => s.id !== state.id).slice(0, 4);
 
+  // Авторский разбор: абзацы разделены пустой строкой
+  const paragraphs = (state.description ?? "")
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const [lede, ...body] = paragraphs;
+
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <nav aria-label="Хлебные крошки" className="font-mono text-[13px] text-ink-3">
@@ -45,29 +52,22 @@ export default async function StatePage({ params }: PageProps) {
         <h1 className="mt-6 max-w-3xl text-[clamp(26px,4vw,34px)] font-semibold italic leading-[1.2] tracking-tight text-balance">
           {state.title}
         </h1>
-        {state.description && (
+        {lede && (
           <p className="mt-5 max-w-[62ch] text-[20px] leading-relaxed text-ink-2">
-            {state.description}
+            {lede}
           </p>
         )}
       </header>
 
-      {/* Релевантные темы */}
-      {topics.length > 0 && (
-        <section className="mt-14 border-t border-line pt-8">
-          <p className="font-mono text-[13px] text-ink-3">Релевантные темы</p>
-          <ul className="mt-3 divide-y divide-line">
-            {topics.map((t) => (
-              <li key={t.id}>
-                <Link href={`/topics/${t.slug}`} className="index-row group">
-                  <span className="min-w-0 flex-1 text-[17px] leading-snug group-hover:text-route">
-                    {t.title}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Текст разбора до ссылок */}
+      {body.length > 0 && (
+        <div className="mt-10 max-w-[62ch]">
+          {body.map((p, i) => (
+            <p key={i} className={i === 0 ? "text-[17px] leading-relaxed" : "mt-5 text-[17px] leading-relaxed"}>
+              {p}
+            </p>
+          ))}
+        </div>
       )}
 
       {/* Статьи */}
@@ -115,6 +115,24 @@ export default async function StatePage({ params }: PageProps) {
                   </span>
                   <span className="ml-auto shrink-0">
                     <VerdictBadge verdict={m.verdict} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Релевантные темы: после текста и статей */}
+      {topics.length > 0 && (
+        <section className="mt-14 border-t border-line pt-8">
+          <p className="font-mono text-[13px] text-ink-3">Релевантные темы</p>
+          <ul className="mt-3 divide-y divide-line">
+            {topics.map((t) => (
+              <li key={t.id}>
+                <Link href={`/topics/${t.slug}`} className="index-row group">
+                  <span className="min-w-0 flex-1 text-[17px] leading-snug group-hover:text-route">
+                    {t.title}
                   </span>
                 </Link>
               </li>

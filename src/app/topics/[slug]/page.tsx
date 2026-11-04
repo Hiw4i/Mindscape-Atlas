@@ -32,6 +32,13 @@ export default async function TopicPage({ params }: PageProps) {
   const topic = getTopicBySlug(slug);
   if (!topic) notFound();
 
+  // Вводный текст темы: абзацы разделены пустой строкой
+  const descParas = (topic.description ?? "")
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const [descLede, ...descBody] = descParas;
+
   const ancestors = getTopicAncestors(topic);
   const color = colorOfTopic(topic);
   const root = getRootSection(topic);
@@ -71,12 +78,53 @@ export default async function TopicPage({ params }: PageProps) {
         <h1 className="mt-6 text-[clamp(34px,5vw,56px)] font-semibold leading-[1.08] tracking-tight">
           {topic.title}
         </h1>
-        {topic.description && (
+        {descLede && (
           <p className="mt-5 max-w-[62ch] text-[20px] leading-relaxed text-ink-2">
-            {topic.description}
+            {descLede}
           </p>
         )}
       </header>
+
+      {/* Вводный текст темы до ссылок */}
+      {descBody.length > 0 && (
+        <div className="mt-10 max-w-[62ch]">
+          {descBody.map((p, i) => (
+            <p key={i} className={i === 0 ? "text-[17px] leading-relaxed" : "mt-5 text-[17px] leading-relaxed"}>
+              {p}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {/* Материалы: указатель строками */}
+      {articles.length > 0 && (
+        <section className="mt-14 border-t border-line pt-8">
+          <h2 className="flex items-baseline gap-3">
+            <span className="text-[26px] font-semibold tracking-tight">Материалы темы</span>
+            <span className="font-mono text-[13px] tabular-nums text-ink-3">{articles.length}</span>
+          </h2>
+          <ul className="mt-4 divide-y divide-line">
+            {articles.map((a, i) => (
+              <li key={a.id}>
+                <Link href={`/articles/${a.slug}`} className="index-row group">
+                  <span className="font-mono text-[13px] tabular-nums text-ink-3">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="min-w-0 flex-1 text-[20px] leading-snug group-hover:text-route">
+                    {a.title}
+                  </span>
+                  <span className="ml-auto hidden shrink-0 items-center gap-4 sm:flex">
+                    <span className="font-mono text-[13px] tabular-nums text-ink-3">
+                      {a.readingMinutes} мин
+                    </span>
+                    <EvidenceBadge level={a.evidenceLevel} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Подтемы */}
       {children.length > 0 && (
@@ -140,36 +188,6 @@ export default async function TopicPage({ params }: PageProps) {
                 </li>
               );
             })}
-          </ul>
-        </section>
-      )}
-
-      {/* Материалы: указатель строками */}
-      {articles.length > 0 && (
-        <section className="mt-14 border-t border-line pt-8">
-          <h2 className="flex items-baseline gap-3">
-            <span className="text-[26px] font-semibold tracking-tight">Материалы темы</span>
-            <span className="font-mono text-[13px] tabular-nums text-ink-3">{articles.length}</span>
-          </h2>
-          <ul className="mt-4 divide-y divide-line">
-            {articles.map((a, i) => (
-              <li key={a.id}>
-                <Link href={`/articles/${a.slug}`} className="index-row group">
-                  <span className="font-mono text-[13px] tabular-nums text-ink-3">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="min-w-0 flex-1 text-[20px] leading-snug group-hover:text-route">
-                    {a.title}
-                  </span>
-                  <span className="ml-auto hidden shrink-0 items-center gap-4 sm:flex">
-                    <span className="font-mono text-[13px] tabular-nums text-ink-3">
-                      {a.readingMinutes} мин
-                    </span>
-                    <EvidenceBadge level={a.evidenceLevel} />
-                  </span>
-                </Link>
-              </li>
-            ))}
           </ul>
         </section>
       )}
