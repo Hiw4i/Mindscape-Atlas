@@ -9,8 +9,19 @@ interface NavItem {
   label: string;
 }
 
+/** Активный раздел: точное совпадение или вложенный маршрут. */
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
 /** Мобильное меню: плавающий слой с единственной разрешённой тенью. */
-export function MobileNav({ items }: { items: NavItem[] }) {
+export function MobileNav({
+  items,
+  pathname,
+}: {
+  items: NavItem[];
+  pathname: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,17 +41,25 @@ export function MobileNav({ items }: { items: NavItem[] }) {
           style={{ boxShadow: "var(--shadow-float)" }}
         >
           <ul className="flex flex-col">
-            {items.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block border-b border-line py-3 font-mono text-[15px] text-ink-2 last:border-b-0 hover:text-ink"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {items.map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      active
+                        ? "block border-b border-line py-3 font-mono text-[15px] text-ink underline decoration-route underline-offset-4 last:border-b-0"
+                        : "block border-b border-line py-3 font-mono text-[15px] text-ink-2 last:border-b-0 hover:text-ink"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       )}
